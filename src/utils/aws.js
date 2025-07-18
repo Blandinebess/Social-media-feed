@@ -1,3 +1,5 @@
+
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 import {
   DynamoDBClient,
@@ -9,38 +11,40 @@ import {
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 const client = new DynamoDBClient({
-  region: "us-east-2",
+  region: process.env.REACT_APP_AWS_REGION,
   credentials: {
-    accessKeyId: "AKIA26W27DWHHD6FVMWU",
-    secretAccessKey: "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",
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_KEY,
   },
 });
+const docClient = DynamoDBDocumentClient.from(client);
 
-const TableName = "PostsTable";
+const TableName = "Posts";
 
 export const createPost = async (post) => {
-  const id = uuidv4();
+  const Id = uuidv4();
   const item = {
-    id: { S: id },
+   Id: { S:Id },
     author: { S: post.author },
     content: { S: post.content },
     image: { S: post.image || "" },
     likes: { N: "0" },
   };
   await client.send(new PutItemCommand({ TableName, Item: item }));
-  return { id, ...post };
+  return { Id, ...post };
 };
 
 export const getPosts = async () => {
-  const result = await client.send(new ScanCommand({ TableName }));
+  const result = await docClient.send(new ScanCommand({ TableName }));
+  console.log("result",)
   return result.Items.map((item) => unmarshall(item));
 };
 
-export const deletePost = async (id) => {
+export const deletePost = async (Id) => {
   await client.send(
     new DeleteItemCommand({
       TableName,
-      Key: { id: { S: id } },
+      Key: { Id: { S: Id } },
     })
   );
 };
@@ -49,7 +53,7 @@ export const updatePost = async (post) => {
   await client.send(
     new UpdateItemCommand({
       TableName,
-      Key: { id: { S: post.id } },
+      Key: { Id: { S: post.Id } },
       UpdateExpression: "SET content = :c",
       ExpressionAttributeValues: {
         ":c": { S: post.content },

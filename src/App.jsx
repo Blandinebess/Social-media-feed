@@ -10,6 +10,7 @@ const App = () => {
     const fetchPosts = async () => {
       try {
         const data = await getPosts();
+        console.log(data)
         setPosts(data.reverse());
       } catch (error) {
         console.error("Error loading posts:", error);
@@ -79,7 +80,7 @@ const App = () => {
         <div className="space-y-4">
           {filteredPosts.map((post) => (
             <div
-              key={post.id}
+              key={post.Id}
               className="bg-white p-4 rounded shadow border border-gray-200"
             >
               <p className="font-semibold text-gray-800">{post.author}</p>

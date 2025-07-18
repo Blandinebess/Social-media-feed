@@ -12,10 +12,11 @@ const Form = ({ onSubmit }) => {
 
     if (image) {
       imageUrl = await uploadImage(image);
+      console.log(imageUrl)
     }
 
     const newPost = {
-      id: Date.now().toString(),
+      Id: Date.now().toString(),
       author,
       content,
       image: imageUrl,
