@@ -57,7 +57,7 @@ const App = () => {
   };
 
   const filteredPosts = posts.filter((post) =>
-    post.author.toLowerCase().includes(search.toLowerCase())
+    post.author?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
